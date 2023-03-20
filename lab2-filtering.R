@@ -134,12 +134,12 @@ sort(sample_sums(df.prerarefaction))
 
 ## check how many samples you'll loose at the rarefaction step
 # N here will be above your "FILTERING - REMOVE SAMPLES WITH LESS THAN N READS" N number
-rare.threshold = which(sample_sums(df.prerarefaction) < 8037) 
+rare.threshold = which(sample_sums(df.prerarefaction) < 9862) 
 rare.threshold
-#view(df.prerarefaction@sam_data)
+view(df.prerarefaction@sam_data)
 
 ## make csv of samples lost if rarefying at N
-samples.lost <- prune_samples(sample_sums(df.prerarefaction) <= 8037, df.prerarefaction)
+samples.lost <- prune_samples(sample_sums(df.prerarefaction) <= 9862, df.prerarefaction)
 metadata.lost = as.data.frame(samples.lost@sam_data)
 write.csv(metadata.lost, "rarefaction_threshold.csv")
 
@@ -153,7 +153,7 @@ sample(10)
 sample(10)
 
 ## rarefy every sample to a set number of reads (N) here  
-df.rarefied <- rarefy_even_depth(df.prerarefaction, sample.size = 8037) 
+df.rarefied <- rarefy_even_depth(df.prerarefaction, sample.size = 9862) 
 
 
 
@@ -176,5 +176,5 @@ summary(otu$abundance)
 
 
 ## save rarefied data
-write_rds(df.rarefied, "rarefied_df.RDS")
+write_rds(df.rarefied, "PAE_minocycline_rarefied_df.RDS")
 

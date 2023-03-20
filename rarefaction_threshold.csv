@@ -1,0 +1,8 @@
+"","sampleID","animal1","animal2","sex","prenatal_group","drug_group","behaviour","Experiment","Control","read_depth_noofftargets","read_depth_filtered"
+"S0009.0007","23_24","23","24","Male","Control","No drug","Y","Experiment","Sample_007"," 4443",4286
+"S0009.0027","63_64","63","64","Male","Ethanol","Adolescent Minocycline","Y","Experiment","Sample_0027"," 7219",7140
+"S0009.0033","77_78","77","78","Female","Control","Lactational Minocycline","N","Experiment","Sample","10053",9862
+"S0009.0043","97_98","97","98","Female","Control","Lactational Minocycline","Y","Experiment","Sample"," 4071",4043
+"S0009.0058","129_130","129","130","Male","Ethanol","Lactational Minocycline","N","Experiment","Sample"," 7735",7678
+"S0009.0059","131_132","131","132","Male","Ethanol","Lactational Minocycline","N","Experiment","Sample"," 7251",7232
+"S0009.0065","143_144","143","144","Male","Ethanol","Lactational Minocycline","Y","Experiment","Sample_0065"," 1282",1230
