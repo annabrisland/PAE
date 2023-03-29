@@ -1,8 +1,5 @@
 library(tidyverse)
-library(vegan)
-library(gridExtra)
 library(phyloseq)
-library(labdsv)
 library(indicspecies)
 library(DESeq2)
 
@@ -46,7 +43,8 @@ minocycline_DEseq_results_phyla_summary<-minocycline_DESeq_results_sig %>%
 minocycline_DEseq_results_genus_summary<-minocycline_DESeq_results_sig %>%
   group_by(Rank6) %>%
   dplyr::summarise(mean_2_fold_change=mean(log2FoldChange, na.rm = TRUE),
-                   padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue))
+                   padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue)) %>%
+  filter(Rank6 != "uncultured")
 
 
 ## Plot phyla
@@ -94,7 +92,8 @@ hyp2_DEseq_results_phyla_summary<-hyp2_DESeq_results_sig %>%
 hyp2_DEseq_results_genus_summary<-hyp2_DESeq_results_sig %>%
   group_by(Rank6) %>%
   dplyr::summarise(mean_2_fold_change=mean(log2FoldChange, na.rm = TRUE),
-                   padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue))
+                   padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue)) %>%
+  filter(Rank6 != "uncultured")
 
 phyla2_plot <- ggplot(hyp2_DEseq_results_phyla_summary,aes(x=reorder(Rank2, -mean_2_fold_change),y=mean_2_fold_change,color = Rank2))+
   geom_point(size=3.5) +
@@ -104,7 +103,7 @@ phyla2_plot <- ggplot(hyp2_DEseq_results_phyla_summary,aes(x=reorder(Rank2, -mea
         text = element_text(face = "bold",size=12),
         legend.position = "none",
         axis.text.x.bottom  = element_text(size=9,angle = -45)) +
-  labs(x="Genus",y="Log2 Fold Change",color= "Genus")
+  labs(x="Phyla",y="Log2 Fold Change",color= "Phyla")
 
 genus2_plot <- ggplot(hyp2_DEseq_results_genus_summary,aes(x=reorder(Rank6, -mean_2_fold_change),y=mean_2_fold_change,color = Rank6))+
   geom_point(size=3.5) +
@@ -114,4 +113,4 @@ genus2_plot <- ggplot(hyp2_DEseq_results_genus_summary,aes(x=reorder(Rank6, -mea
         text = element_text(face = "bold",size=12),
         legend.position = "none",
         axis.text.x.bottom  = element_text(size=9,angle = -45)) +
-  labs(x="Phyla",y="Log2 Fold Change",color= "Phyla")
+  labs(x="Genus",y="Log2 Fold Change",color= "Genus")
