@@ -1,0 +1,18 @@
+,plot_names,plot_colors
+1,Others,grey90
+2,Bacteroidales; NA,bisque1
+3,Bacteroidales; Prevotellaceae_NK3B31_group,bisque3
+4,Verrucomicrobiales; Akkermansia,bisque4
+5,Bacteroidales; Bacteroides,lemonchiffon1
+6,Bacteroidales; Parabacteroides,lemonchiffon3
+7,Bacteroidales; Alistipes,lemonchiffon4
+8,Lactobacillales; Lactobacillus,wheat1
+9,Clostridiales; Ruminococcus_2,wheat3
+10,Anaeroplasmatales; Anaeroplasma,wheat4
+11,Clostridiales; Ruminococcaceae_UCG-014,burlywood1
+12,Clostridiales; Lachnospiraceae_NK4A136_group,burlywood3
+13,Clostridiales; Romboutsia,thistle4
+14,Clostridiales; [Eubacterium]_coprostanoligenes_group,thistle1
+15,Clostridiales; uncultured,hotpink4
+16,Clostridiales; NA,hotpink3
+17,Clostridiales; Ruminiclostridium_9,palegreen

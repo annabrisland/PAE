@@ -42,6 +42,13 @@ minocycline_DEseq_results_phyla_summary<-minocycline_DESeq_results_sig %>%
   dplyr::summarise(mean_2_fold_change=mean(log2FoldChange, na.rm = TRUE),
             padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue))
 
+# mean of each genus
+minocycline_DEseq_results_genus_summary<-minocycline_DESeq_results_sig %>%
+  group_by(Rank6) %>%
+  dplyr::summarise(mean_2_fold_change=mean(log2FoldChange, na.rm = TRUE),
+                   padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue))
+
+
 ## Plot phyla
 phyla_plot <- ggplot(minocycline_DEseq_results_phyla_summary,aes(x=reorder(Rank2, -mean_2_fold_change),y=mean_2_fold_change,color = Rank2))+
   geom_point(size=3.5) +
@@ -52,6 +59,17 @@ phyla_plot <- ggplot(minocycline_DEseq_results_phyla_summary,aes(x=reorder(Rank2
         legend.position = "none",
         axis.text.x.bottom  = element_text(size=9,angle = -45)) +
         labs(x="Phylum",y="Log2 Fold Change",color= "Phylum")
+
+## Plot genus
+genus_plot <- ggplot(minocycline_DEseq_results_genus_summary,aes(x=reorder(Rank6, -mean_2_fold_change),y=mean_2_fold_change,color = Rank6))+
+  geom_point(size=3.5) +
+  geom_hline(yintercept = 0,size=1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = -90,hjust = 0,vjust = 0.5),
+        text = element_text(face = "bold",size=12),
+        legend.position = "none",
+        axis.text.x.bottom  = element_text(size=9,angle = -45)) +
+  labs(x="Genus",y="Log2 Fold Change",color= "Genus")
 
 
 ## Subset df comparing control group without minocycline and PAE group with minocycline
@@ -73,6 +91,11 @@ hyp2_DEseq_results_phyla_summary<-hyp2_DESeq_results_sig %>%
   dplyr::summarise(mean_2_fold_change=mean(log2FoldChange, na.rm = TRUE),
                    padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue))
 
+hyp2_DEseq_results_genus_summary<-hyp2_DESeq_results_sig %>%
+  group_by(Rank6) %>%
+  dplyr::summarise(mean_2_fold_change=mean(log2FoldChange, na.rm = TRUE),
+                   padj=combine_pvalues(padj),countmean = mean(baseMean, na.rm = TRUE),pvalue=combine_pvalues(pvalue))
+
 phyla2_plot <- ggplot(hyp2_DEseq_results_phyla_summary,aes(x=reorder(Rank2, -mean_2_fold_change),y=mean_2_fold_change,color = Rank2))+
   geom_point(size=3.5) +
   geom_hline(yintercept = 0,size=1) +
@@ -81,4 +104,14 @@ phyla2_plot <- ggplot(hyp2_DEseq_results_phyla_summary,aes(x=reorder(Rank2, -mea
         text = element_text(face = "bold",size=12),
         legend.position = "none",
         axis.text.x.bottom  = element_text(size=9,angle = -45)) +
-  labs(x="Phylum",y="Log2 Fold Change",color= "Phylum")
+  labs(x="Genus",y="Log2 Fold Change",color= "Genus")
+
+genus2_plot <- ggplot(hyp2_DEseq_results_genus_summary,aes(x=reorder(Rank6, -mean_2_fold_change),y=mean_2_fold_change,color = Rank6))+
+  geom_point(size=3.5) +
+  geom_hline(yintercept = 0,size=1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = -90,hjust = 0,vjust = 0.5),
+        text = element_text(face = "bold",size=12),
+        legend.position = "none",
+        axis.text.x.bottom  = element_text(size=9,angle = -45)) +
+  labs(x="Phyla",y="Log2 Fold Change",color= "Phyla")

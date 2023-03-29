@@ -56,7 +56,7 @@ PAE.phyloseq = read_rds("PAE_minocycline_filtered_phyloseq.RDS")
 PAE.phyloseq@sam_data$number_of_reads = sample_sums(PAE.phyloseq)
 
 ## subset the phyloseq object to only keep the samples you want
-PAE.phyloseq = subset_samples(PAE.phyloseq, prenatal_control = "Control")
+#PAE.phyloseq = subset_samples(PAE.phyloseq, prenatal_group == "Ethanol")
 
 ## get the PAE data out of phyloseq
 ## I always call this dataframe mot becayse it's the Metadata, OTU table, and Taxonomy, in that order
@@ -70,7 +70,7 @@ mot$plot_names = paste0(mot$Rank4, "; ", mot$Rank6)
 
 ##### LOOP TO SELECT TOP 15 GENERA IN SAMPLES ######
 ## make variable to track sample types and salinities
-mot$group = paste0(mot$prenatal_group, "-", mot$drug_group)
+mot$group = paste0(mot$prenatal_group)
 
 
 ## summarize mto
@@ -81,7 +81,7 @@ mot.sum = ddply(mot, c("group", "plot_names"),
 
 
 ## get list of all samples
-samplegroups = unique(mot.sum$drug_group)
+samplegroups = unique(mot.sum$group)
 
 ## sort data by relative abundance
 sorted = mot.sum[order(-mot.sum$sum),]
@@ -128,8 +128,8 @@ mot.top[mot.top$place == "bottom",]$plot_names <- "Others"
 taxa = unique(mot.top$plot_names)
 
 ## write a csv with the names
-#write.csv(taxa, "colors_taxaplot_biol403503.csv")
-colors = read.csv("colors_taxaplot_biol403503.csv")
+write.csv(taxa, "colors_taxaplot_PAE.csv")
+colors = read.csv("colors_taxaplot_PAE.csv")
 
 ##### MAKE TAXAPLOT #####
 # Assign taxa names to colors
@@ -155,7 +155,7 @@ plot.order = unlist(plot.order)
 mot.top$plot_names = factor(mot.top$plot_names, levels=c(plot.order))
 
 ## get list to cycle through
-mot.top$taxaplotgroup = paste0(mot.top$Study, "-", mot.top$Group)
+mot.top$taxaplotgroup = paste0(mot.top$prenatal_group)
 taxaplot.groups = unique(mot.top$taxaplotgroup)
 
 
@@ -168,27 +168,15 @@ for (i in taxaplot.groups){
                               fill=as.factor(plot_names)))+
       geom_bar(stat = "identity")+
       scale_fill_manual(values=scolors)+
-      facet_grid(.~Study+Group, scales="free", space="free")+
+      facet_grid(.~prenatal_group+drug_group, scales="free", space="free")+
       labs(x=" ", y="Genus relative abundance in samples", fill="Order; Genus")+
       guides(fill=guide_legend(ncol=1))
     
     myplot
     
     ## save plot
-    ggsave(myplot, filename=paste0(j,"_practice_taxaplot",".png",sep=""), width=12, height=7,
-    path=paste0(filepath, "/practice_taxaplots/"))
+    ggsave(myplot, filename=paste0(j,"PAE_minocycline_taxaplot",".png",sep=""), width=12, height=7,
+    path=paste0(filepath, "/taxaplots_final/"))
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
