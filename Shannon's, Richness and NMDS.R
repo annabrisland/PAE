@@ -9,13 +9,14 @@ library(ggsignif)
 library(sperich)
 library(pairwiseAdonis)
 library(dunn.test)
+library(car)
 
 
 ## tell R where to get the files
 setwd("C:/Users/tonym/Desktop/Year 4/Term 2/BIOL 403+503/Project")
 #?import
 
-#####################################################################
+############################VARIABLES#########################################
 
 PAE_data = readRDS("PAE_minocycline_rarefied_df.RDS")
 PAE_data
@@ -43,7 +44,7 @@ PAE_meta_col <-c(1,2,3,4,5,6,7,8,9,10,11,12)
 PAE_otu_col <-13:304 
 view(PAE_otu_col)
 
-#######################Richness Function################################################
+#######################RICHNESS################################################
 metadata$obs_richness = estimate_richness(otu_table1, split = TRUE, measures = c("Observed"))
 view(metadata)
 metadata$alpha <- diversity(otu, index = "shannon")
@@ -64,7 +65,7 @@ both_sexes_graph
 #males - sex
 males_only_graph <-ggplot(males_only, aes(x = prenatal_group, y = alpha, fill=drug_group)) + xlab("Condition") +ylab("Shannon's Index") + 
   labs(title = " Figure 2: Alpha Diversity (α) of Treatment Groups for Males Only") +
-  theme(plot.title = element_text(hjust = 0.5)) +geom_violin()
+  theme(plot.title = element_text(hjust = 0.5)) +geom_boxplot()
 males_only_graph
 
 #females - sex
@@ -88,10 +89,13 @@ females_only_graph
 dev.off() 
 
 
+#ANOVA & Tukey Post-Hoc Test
+
 aov.out = aov( alpha~ drug_group * prenatal_group, data=males_only)
 options(show.signif.stars=F)
 summary(aov.out)
 TukeyHSD(aov.out)
+leveneTest(alpha~ drug_group * prenatal_group, data=males_only)
 
 aov.out = aov( alpha~ prenatal_group * drug_group, data=females_only)
 options(show.signif.stars=F)
@@ -103,7 +107,7 @@ options(show.signif.stars=F)
 summary(aov.out)
 TukeyHSD(aov.out)
 
-############# RICHNESS INDEX ALPHA DIVERSITY ##################################################################
+############# SPECIES RICHNESS - ALPHA DIVERSITY ##################################################################
 
 #both sexes
 both_sexes_richness <- ggplot(metadata, aes(x = prenatal_group, y = obs_richness$Observed, fill=drug_group)) + 
@@ -140,11 +144,12 @@ females_only_richness
 # Closing the graphical device
 dev.off() 
 
-
+#ANOVA & Tukey Post-Hoc Test
 aov.out = aov( obs_richness$Observed~ drug_group * prenatal_group, data=males_only)
 options(show.signif.stars=F)
 summary(aov.out)
 TukeyHSD(aov.out)
+leveneTest(aov.out)
 
 aov.out = aov( obs_richness$Observed~ prenatal_group * drug_group, data=females_only)
 options(show.signif.stars=F)
@@ -210,11 +215,6 @@ combine_pvalues = function(p){
 
 ################################BETA DIVERSITY ###########################################
 
-
-highlight_var  = "drug_group"
-variable_to_filter_by2 = "prenatal_group"
-
-
 # MALES --------------------------------------------------------------------------------------
 #{r, Plotting Stress values across Dimensions, include=TRUE, echo=FALSE}
 PAE_MDSdim_males<-checkMDSdim((males_only_asv[-PAE_meta_col]),iter = 5)
@@ -225,7 +225,7 @@ plot_stress = ggplot(PAE_MDSdim_males, aes(dimension, stress))+
 
 #{r, NMDS plot, include=TRUE, echo=FALSE }
 PAE_MDS_males <- metaMDS(males_only_asv[-PAE_meta_col])
-PAE_MDSmeta_males = data.frame(cbind(males_only_asv[,PAE_meta_col],PAE_MDS$points))
+PAE_MDSmeta_males = data.frame(cbind(males_only_asv[,PAE_meta_col],PAE_MDS_males$points))
 plot_MDS_males = ggplot(PAE_MDSmeta_males, aes(x = MDS1,y = MDS2))+
   geom_point(aes_string(shape=variable_to_filter_by2, color=highlight_var), size= 3)+
   coord_fixed()+ labs(title = " Figure 1: Males Only") +
@@ -264,7 +264,7 @@ PAE_MDS_both <- metaMDS(metaasv[-PAE_meta_col])
 PAE_MDSmeta_both = data.frame(cbind(metaasv[,PAE_meta_col],PAE_MDS_both$points))
 plot_MDS_both = ggplot(PAE_MDSmeta_both, aes(x = MDS1,y = MDS2))+
   geom_point(aes_string(shape=variable_to_filter_by2, color=highlight_var), size= 3)+
-  coord_fixed()+ labs(title = " Figure 3 : Both ")
+  coord_fixed()+ labs(title = " Figure 3 : Both ")+
   theme_classic()+
   theme(text = element_text(size = 15, face = "bold"))
 plot_MDS_both
@@ -299,62 +299,13 @@ p3 = adonis2(females_only_asv[,-c(1:13)]~prenatal_group * drug_group, data=femal
 print(p3)
 
 ## Conduct a post-hoc test
-pair.id = pairwise.adonis(metaasv[,-c(1:13)], factors = (metaasv$prenatal_group) )
+pair.id = pairwise.adonis(metaasv[,-c(1:13)], factors = (metaasv$drug_group) )
 print(pair.id)
 
-pair.id = pairwise.adonis(males_only_asv[,-c(1:13)], factors = (males_only_asv$prenatal_group) )
+pair.id = pairwise.adonis(males_only_asv[,-c(1:13)], factors = (males_only_asv$drug_group) )
 print(pair.id)
 
-pair.id = pairwise.adonis(females_only_asv[,-c(1:13)], factors = (females_only_asv$prenatal_group))
+pair.id = pairwise.adonis(females_only_asv[,-c(1:13)], factors = (females_only_asv$drug_group))
 print(pair.id)
 
 
-
-#################IGNORE#########################################################
-
-
-
-#################IGNORE#########################################################
-
-#if (highlight_var != ""){
-#  MDS_centroid = calculate_ellipse(PAE_MDSmeta,filter_by = highlight_var)
-#plot_MDS = plot_MDS   +   geom_path(data=MDS_centroid,mapping = aes(colour = filter), linewidth =1.25)
-#}
-
-#if (variable_to_filter_by2!== "Control"){
-  MDS_centroid = calculate_ellipse(PAE_MDSmeta,filter_by = (highlight_var))
-  plot_MDS = plot_MDS   +   geom_path(data=MDS_centroid,mapping = aes(colour = filter), linewidth =1.25)
-#}
-plot_MDS
-
-
-############ IGNORE BETA DIVERSITY #########################################
-
-#make community matrix - extract columns with abundance information
-com = males_only_asv$data[,13:ncol(males_only_asv)]
-m_com = as.matrix(com)
-set.seed(123)
-nmds = metaMDS(m_com, distance = "bray")
-nmds
-
-data.scores = as.data.frame(scores(nmds))
-data.scores = as.data.frame(scores(nmds)$sites)
-data.scores$Sample = males_only_asv$Row.names
-data.scores$prenatal_group = males_only_asv$prenatal_group
-data.scores$drug_group = males_only_asv$drug_group
-head(data.scores)
-
-xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  geom_point(size = 4, aes( shape = Type, colour = Time))+ 
-  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
-        axis.text.x = element_text(colour = "black", face = "bold", size = 12), 
-        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
-        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
-        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
-        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
-        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
-        legend.key=element_blank()) + 
-  labs(x = "NMDS1", colour = "Time", y = "NMDS2", shape = "Type")  + 
-  scale_colour_manual(values = c("#009E73", "#E69F00")) 
-
-xx
