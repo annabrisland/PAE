@@ -1,5 +1,3 @@
-##### SET UP #####
-## load packages
 library(phyloseq)
 library(tidyverse)
 library(plyr)
@@ -23,9 +21,8 @@ dephyloseq = function(phylo_obj){
   metacols = ncol(meta)+1
   
   ## get out the otu table 
-  ## if your metadta is empty after running this, you need to use otu = as.data.frame(t(as.matrix(phylo_obj@otu_table)))
-  #otu = as.data.frame(as.matrix(phylo_obj@otu_table))
   otu = as.data.frame(t(as.matrix(phylo_obj@otu_table)))
+  
   ## merge the metadata and otu table by the rownames (sample ids from the Illumina sequencing data)
   mo = merge(meta, otu, by=0)
   
@@ -55,30 +52,24 @@ PAE.phyloseq = read_rds("PAE_minocycline_filtered_phyloseq.RDS")
 ## get the number of reads in each sample in your phyloseq object
 PAE.phyloseq@sam_data$number_of_reads = sample_sums(PAE.phyloseq)
 
-## subset the phyloseq object to only keep the samples you want
-#PAE.phyloseq = subset_samples(PAE.phyloseq, prenatal_group == "Ethanol")
-
 ## get the PAE data out of phyloseq
-## I always call this dataframe mot becayse it's the Metadata, OTU table, and Taxonomy, in that order
 mot = dephyloseq(PAE.phyloseq)
 
-## get realtive abundance of otu
+## get relative abundance of otu
 mot$relative_abundance = as.numeric(mot$asv_abundance)/as.numeric(mot$number_of_reads)
 
 ## make taxa names for plot column
 mot$plot_names = paste0(mot$Rank4, "; ", mot$Rank6)
 
 ##### LOOP TO SELECT TOP 15 GENERA IN SAMPLES ######
-## make variable to track sample types and salinities
+## make variable to track sample group
 mot$group = paste0(mot$prenatal_group)
-
 
 ## summarize mto
 mot.sum = ddply(mot, c("group", "plot_names"),
                 summarise,
                 N=length(relative_abundance),
                 sum = sum(relative_abundance))
-
 
 ## get list of all samples
 samplegroups = unique(mot.sum$group)
@@ -122,9 +113,7 @@ mot.top$place = replace(mot.top$place, is.na(mot.top$place), "bottom")
 mot.top[mot.top$place == "bottom",]$plot_names <- "Others"
 
 
-
 ##### MAKE COLOR LIST #####
-## how many do we need?
 taxa = unique(mot.top$plot_names)
 
 ## write a csv with the names

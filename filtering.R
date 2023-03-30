@@ -1,4 +1,3 @@
-##### WORKSPACE SETUP #####
 library(phyloseq)
 library(tidyverse)
 library(vegan)
@@ -15,18 +14,15 @@ df
 ##### FILTERING - REMOVE OFF-TAGET TAXA AND MAJOR CONTAMINATION FROM TAXONOMY FILE #####
 df = subset_taxa(df, Kingdom="Archaea"|"Bacteria")
 
-##### FILTERING - REMOVE SAMPLES WITH LESS THAN N READS #####
-# my N is usually >1000
-## Remove samples with less than N reads 
+##### FILTERING - REMOVE SAMPLES WITH LESS THAN 1000 READS #####
 sample_sums(df)
 plot(sort(sample_sums(df)))
 
 ## add number of total sequences in a sample (Read depth) to the metadata 
 df@sam_data$read_depth_noofftargets = sample_sums(df) 
 
-## check which samples have less than N reads
+## check which samples have less than 1000 reads
 which(df@sam_data$read_depth_noofftargets < 1000)
-
 
 ## remove the samples by your threshold 
 df.pruned <- prune_samples(sample_sums(df) >= 1000, df)
@@ -34,15 +30,13 @@ df.pruned <- prune_samples(sample_sums(df) >= 1000, df)
 ## write file to know which samples were lost here. This is important for the methods section. 
 df.below1000 <- prune_samples(sample_sums(df) < 1000, df)
 df.below1000 = as.matrix(df.below1000@sam_data)
-write_rds(df.below1000, "SF_samples_less_than_N.csv")
+write_rds(df.below1000, "SF_samples_less_than_1000.csv")
 
-##### FILTERING - REMOVE INDIVIDUAL ASVS WITH LESS THAN N READS #####
-## N is probably around 100 
+##### FILTERING - REMOVE INDIVIDUAL ASVS WITH LESS THAN 100 READS #####
 ## extract OTU dataframe from phyloseq object
 otu.pruned <- as.data.frame(as.matrix(otu_table(df.pruned)))
 
-## remove ASVs (rows) with less than N reads accross whole dataset but keep all samples
-#!# make sure asv sequence is rownames and sample id is column name
+## remove ASVs (rows) with less than 100 reads across whole dataset but keep all samples
 otu.pruned$rowsum = rowSums(otu.pruned)
 
 ## remove low frequency asvs
@@ -52,8 +46,7 @@ otu.pruned = subset(otu.pruned, otu.pruned$rowsum>100)
 otu = subset(otu.pruned, select=-c(rowsum))
 
 
-##### FILTERING - REMOVE ASVs FOUND IN N SAMPLES OR LESS #####
-## your N is probably between 2 and 5
+##### FILTERING - REMOVE ASVs FOUND IN 2 SAMPLES OR LESS #####
 
 # has sample ID as column name and asv is as row name. Needs to be this way to use richness function 
 # function to calculate richness, sums along a row (OTU)
@@ -63,7 +56,7 @@ richness = function(x){return(sum(x>0))}
 otu$richness = apply(otu,1,richness) # use all columns of otu dataframe
 summary(otu$richness)
 
-## remove OTU (rows) with richness N or less (found in two samples or less) but keep all samples (columns)
+## remove OTU (rows) with richness 2 or less
 otu = subset(otu, otu$richness> 2)
 ## check that it worked
 summary(otu$richness)
@@ -71,11 +64,8 @@ summary(otu$richness)
 otu = subset(otu, select=-c(richness))
 
 
-##### DENOISING - MAKE ALL THE CELLS IN THE OTU TABLE WITH VALUES N OR LESS 0 #####
-## your N is probably between 2 and 10
-
+##### DENOISING - MAKE ALL THE CELLS IN THE OTU TABLE WITH VALUES 5 OR LESS 0 #####
 otu <- mutate_all(otu, funs(ifelse(. < 5, 0, .)))
-
 
 ##### CREATE AND READ BACK IN FILTERED BUT NOT RAREFIED PHYLOSEQ OBJECT ######
 
@@ -110,9 +100,6 @@ df.prerarefaction = prune_taxa(taxa_sums(df.prerarefaction)>0, df.prerarefaction
 ## get final read depth
 df.prerarefaction@sam_data$read_depth_filtered = sample_sums(df.prerarefaction)
 
-## remove samples with very highest sample counts (might not be required for your dataset)
-histogram(df.prerarefaction@sam_data$read_depth_filtered, breaks=100)
-#df.prerarefaction = subset_samples(df.prerarefaction, read_depth_filtered<75000)
 histogram(df.prerarefaction@sam_data$read_depth_filtered, breaks=100)
 
 ## save your filtered but not rarefied phyloseq object 
@@ -133,12 +120,11 @@ rarecurve(df.matrix, step=50, cex=0.5)
 sort(sample_sums(df.prerarefaction))
 
 ## check how many samples you'll loose at the rarefaction step
-# N here will be above your "FILTERING - REMOVE SAMPLES WITH LESS THAN N READS" N number
 rare.threshold = which(sample_sums(df.prerarefaction) < 9862) 
 rare.threshold
 view(df.prerarefaction@sam_data)
 
-## make csv of samples lost if rarefying at N
+## make csv of samples lost if rarefying at 9862
 samples.lost <- prune_samples(sample_sums(df.prerarefaction) <= 9862, df.prerarefaction)
 metadata.lost = as.data.frame(samples.lost@sam_data)
 write.csv(metadata.lost, "rarefaction_threshold.csv")
@@ -152,26 +138,25 @@ set.seed(5)
 sample(10)
 sample(10)
 
-## rarefy every sample to a set number of reads (N) here  
+## rarefy every sample to a set number of reads (9862) here  
 df.rarefied <- rarefy_even_depth(df.prerarefaction, sample.size = 9862) 
 
 
 
 ##### CHECK THAT RAREFACTION WORKED #####
 ## function to calculate counts along a row
-#!# this function needs sample_id as a row and asvs as columns
 abundance = function(x){
   return(sum(x,na.rm=TRUE))}
 
 otu = as.data.frame(df.rarefied@otu_table)
-## check the data are formatted correctly (see requiermtns for abundance function above). 
+## check the data are formatted correctly (see requirements for abundance function above). 
 otu=as.matrix(otu)
 # transpose to have sample_id as row and OTU as column (might not need to)
 otu = t(otu)
 otu = as.data.frame(otu)
 
 otu$abundance = apply(otu,1,abundance)
-## should be your rarefaction number 9N) exactly
+
 summary(otu$abundance) 
 
 
