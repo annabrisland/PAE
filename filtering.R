@@ -12,7 +12,7 @@ df = readRDS("pae_minocycline_unfiltered_phyloseq.RDS")
 df
 
 ##### FILTERING - REMOVE OFF-TAGET TAXA AND MAJOR CONTAMINATION FROM TAXONOMY FILE #####
-df = subset_taxa(df, Kingdom="Archaea"|"Bacteria")
+df = subset_taxa(df, Kingdom="Bacteria")
 
 ##### FILTERING - REMOVE SAMPLES WITH LESS THAN 1000 READS #####
 sample_sums(df)
