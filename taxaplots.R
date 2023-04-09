@@ -117,8 +117,8 @@ mot.top[mot.top$place == "bottom",]$plot_names <- "Others"
 taxa = unique(mot.top$plot_names)
 
 ## write a csv with the names
-write.csv(taxa, "colors_taxaplot_PAE.csv")
-colors = read.csv("colors_taxaplot_PAE.csv")
+#write.csv(taxa, "colors_taxaplot_PAE.csv")
+colors = read.csv("colors_taxaplot_PAE_final1.csv")
 
 ##### MAKE TAXAPLOT #####
 # Assign taxa names to colors
@@ -165,7 +165,7 @@ for (i in taxaplot.groups){
     
     ## save plot
     ggsave(myplot, filename=paste0(j,"PAE_minocycline_taxaplot",".png",sep=""), width=12, height=7,
-    path=paste0(filepath, "/taxaplots_final/"))
+    path=paste0(filepath, "/taxaplots_final2/"))
   }
 }
 

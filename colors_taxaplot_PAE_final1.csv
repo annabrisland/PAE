@@ -1,18 +1,18 @@
 ﻿,plot_names,plot_colors
-1,Others,darkolivegreen4
-2,Bacteroidales; NA,chartreuse1
+1,Others,grey90
+2,Bacteroidales; NA,light sky blue
 3,Bacteroidales; Prevotellaceae_NK3B31_group,navy
 4,Verrucomicrobiales; Akkermansia,chartreuse4
-5,Bacteroidales; Bacteroides,light sky blue
+5,Bacteroidales; Bacteroides,chartreuse1
 6,Bacteroidales; Parabacteroides,deep pink
 7,Bacteroidales; Alistipes,salmon
 8,Lactobacillales; Lactobacillus,darkgreen
-9,Clostridiales; Ruminococcus_2,hotpink
+9,Clostridiales; Ruminococcus_2,wheat1
 10,Anaeroplasmatales; Anaeroplasma,violet
 11,Clostridiales; Ruminococcaceae_UCG-014,yellow
 12,Clostridiales; Lachnospiraceae_NK4A136_group,lightcyan4
 13,Clostridiales; Romboutsia,cadetblue1
 14,Clostridiales; [Eubacterium]_coprostanoligenes_group,cadetblue3
 15,Clostridiales; uncultured,cadetblue4
-16,Clostridiales; NA,slategray1
-17,Clostridiales; Ruminiclostridium_9,slategray3
+16,Clostridiales; NA,darkolivegreen4
+17,Clostridiales; Ruminiclostridium_9,hotpink
