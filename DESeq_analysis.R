@@ -14,10 +14,10 @@ combine_pvalues = function(p){
 df = readRDS("PAE_minocycline_filtered_phyloseq.RDS")
 
 ##Agglomerate taxa of the same type at phylum level
-df_glom <- tax_glom(df, taxrank = "Rank2")
+df_glom_phy <- tax_glom(df, taxrank = "Rank2")
 
 ##Agglomerate taxa of the same type at genus level
-df_glom_phy <- tax_glom(df, taxrank = "Rank6")
+df_glom <- tax_glom(df, taxrank = "Rank6")
 
 df_minocycline <- subset_samples(df_glom_phy, drug_group == "No drug")
 
