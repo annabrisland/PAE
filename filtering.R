@@ -30,7 +30,7 @@ df.pruned <- prune_samples(sample_sums(df) >= 1000, df)
 ## write file to know which samples were lost here. This is important for the methods section. 
 df.below1000 <- prune_samples(sample_sums(df) < 1000, df)
 df.below1000 = as.matrix(df.below1000@sam_data)
-write_rds(df.below1000, "SF_samples_less_than_1000.csv")
+write_rds(df.below1000, "PAE_samples_less_than_1000.csv")
 
 ##### FILTERING - REMOVE INDIVIDUAL ASVS WITH LESS THAN 100 READS #####
 ## extract OTU dataframe from phyloseq object
